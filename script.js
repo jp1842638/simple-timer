@@ -21,13 +21,10 @@
   const colorText = document.getElementById('color-text');
   const colorAccent = document.getElementById('color-accent');
   const btnResetTheme = document.getElementById('btn-reset-theme');
-  const toggleNotif = document.getElementById('toggle-notifications');
-  const notifStatus = document.getElementById('notif-status');
 
   // ----- State -----
   const STORAGE_KEY = 'simple-timer-settings';
   const DEFAULT_THEME = 'dark';
-  let notificationsEnabled = false;
 
   let totalSeconds = 0;       // Currently configured time (seconds)
   let remainingSeconds = 0;   // Remaining time
@@ -103,7 +100,6 @@
     updateDisplay();
     display.classList.add('finished');
     playAlarm();
-    showSystemNotification();
   };
 
   const applyInputsToTotal = () => {
@@ -141,60 +137,10 @@
         osc.start(start);
         osc.stop(start + 0.3);
       };
-      [0, 0.5, 1.0].forEach(playBeep);
-      setTimeout(() => ctx.close(), 2000);
+      [0, 0.5, 1.0, 1.5, 2.0].forEach(playBeep);
+      setTimeout(() => ctx.close(), 3000);
     } catch (e) {
       // Audio not available — silent fail
-    }
-  };
-
-  // ----- System notifications -----
-  const isNotificationSupported = () => 'Notification' in window;
-
-  const updateNotifStatus = () => {
-    if (!isNotificationSupported()) {
-      notifStatus.textContent = 'Not supported in this browser';
-      toggleNotif.disabled = true;
-      return;
-    }
-    const perm = Notification.permission;
-    if (notificationsEnabled && perm === 'granted') {
-      notifStatus.textContent = 'On';
-    } else if (perm === 'denied') {
-      notifStatus.textContent = 'Blocked — enable in browser settings';
-    } else {
-      notifStatus.textContent = 'Off';
-    }
-  };
-
-  const requestNotificationPermission = async () => {
-    if (!isNotificationSupported()) return false;
-    if (Notification.permission === 'granted') return true;
-    if (Notification.permission === 'denied') return false;
-    try {
-      const result = await Notification.requestPermission();
-      return result === 'granted';
-    } catch (e) {
-      return false;
-    }
-  };
-
-  const showSystemNotification = () => {
-    if (!notificationsEnabled) return;
-    if (!isNotificationSupported()) return;
-    if (Notification.permission !== 'granted') return;
-    try {
-      const n = new Notification('⏰ Timer Finished!', {
-        body: 'Your countdown has ended.',
-        tag: 'simple-timer',
-        requireInteraction: true,
-      });
-      n.onclick = () => {
-        window.focus();
-        n.close();
-      };
-    } catch (e) {
-      // Some browsers throw if not from a service worker — silently ignore
     }
   };
 
@@ -287,7 +233,6 @@
     const data = {
       theme: document.documentElement.getAttribute('data-theme') || DEFAULT_THEME,
       custom: getCustomOverrides(),
-      notifications: notificationsEnabled,
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   };
@@ -306,20 +251,12 @@
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) {
         applyTheme(DEFAULT_THEME);
-        updateNotifStatus();
         return;
       }
       const data = JSON.parse(raw);
       applyTheme(data.theme || DEFAULT_THEME, data.custom || null);
-      // Only treat notifications as enabled if permission is still granted
-      if (data.notifications && isNotificationSupported() && Notification.permission === 'granted') {
-        notificationsEnabled = true;
-        toggleNotif.checked = true;
-      }
-      updateNotifStatus();
     } catch (e) {
       applyTheme(DEFAULT_THEME);
-      updateNotifStatus();
     }
   };
 
@@ -363,22 +300,6 @@
 
   btnResetTheme.addEventListener('click', () => {
     applyTheme(DEFAULT_THEME);
-    saveSettings();
-  });
-
-  toggleNotif.addEventListener('change', async (e) => {
-    if (e.target.checked) {
-      const granted = await requestNotificationPermission();
-      if (granted) {
-        notificationsEnabled = true;
-      } else {
-        notificationsEnabled = false;
-        toggleNotif.checked = false;
-      }
-    } else {
-      notificationsEnabled = false;
-    }
-    updateNotifStatus();
     saveSettings();
   });
 
