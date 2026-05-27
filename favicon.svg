@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="sandGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFD60A"/>
+      <stop offset="50%" stop-color="#E8A53C"/>
+      <stop offset="100%" stop-color="#A0522D"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="64" height="64" rx="12" fill="#ffffff"/>
+  <polygon points="16,12 48,12 32,32" fill="url(#sandGrad)"/>
+  <polygon points="22,52 42,52 32,42" fill="url(#sandGrad)"/>
+  <rect x="31" y="32" width="2" height="10" fill="#E8A53C"/>
+  <g fill="none" stroke="#5C3A1E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="14" y1="10" x2="50" y2="10"/>
+    <line x1="14" y1="54" x2="50" y2="54"/>
+    <path d="M16 10 L16 14 L32 32 L16 50 L16 54"/>
+    <path d="M48 10 L48 14 L32 32 L48 50 L48 54"/>
+  </g>
+</svg>

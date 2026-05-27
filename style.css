@@ -313,12 +313,20 @@ body {
   gap: 8px;
 }
 
+.theme-btn,
+.theme-btn:hover,
+.theme-btn:focus,
+.theme-btn:active,
+.theme-btn.active {
+  color: var(--text) !important;
+  -webkit-text-fill-color: var(--text) !important;
+}
+
 .theme-btn {
   position: relative;
   padding: 10px 28px 10px 32px;
   font-size: 0.85rem;
   background: transparent;
-  color: var(--text) !important;
   border: 1px solid var(--border);
   border-radius: 6px;
   cursor: pointer;
